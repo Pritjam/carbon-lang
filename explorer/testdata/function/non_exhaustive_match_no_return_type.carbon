@@ -2,16 +2,23 @@
 // Exceptions. See /LICENSE for license information.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //
-// RUN: %{not} %{explorer} %s 2>&1 | \
+// RUN: %{explorer} %s 2>&1 | \
 // RUN:   %{FileCheck} --match-full-lines --allow-unused-prefixes=false %s
-// RUN: %{not} %{explorer} --parser_debug --trace_file=- %s 2>&1 | \
+// RUN: %{explorer} --parser_debug --trace_file=- %s 2>&1 | \
 // RUN:   %{FileCheck} --match-full-lines --allow-unused-prefixes %s
 // AUTOUPDATE: %{explorer} %s
+// CHECK: result: 0
 
 package ExplorerTest api;
 
-// CHECK: COMPILATION ERROR: {{.*}}/explorer/testdata/impl/impl_as.carbon:[[@LINE+1]]: expected constraint after `as`, found value of type i32
-external impl i32 as i32 {}
+fn F(n: i32) {
+  match (n) {
+    case 1 => { return; }
+  }
+  // No diagnostic: this is reachable but that's OK.
+}
 
 fn Main() -> i32 {
+  F(0);
+  return 0;
 }
